@@ -69,7 +69,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class MultiTrackerActivity extends AppCompatActivity {
     private static final String TAG = "MultiTracker";
-    private final int sec = 5;
+    private final double sec = 1.5;
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -156,20 +156,7 @@ public class MultiTrackerActivity extends AppCompatActivity {
 
             faceCount.addTextChangedListener(new TextWatcher() {
                 private Timer timer = new Timer();
-//                private CountDownTimer timer = new CountDownTimer(500, 1000) {
-//                    @Override
-//                    public void onTick(long millisUntilFinished) {
-//                        if(millisUntilFinished == 0) {
-//                          photoshot();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFinish() {
-//
-//                    }
-//                }
-                private final int DELAY = 500;
+                private final int DELAY = (int)(sec * 1000);
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
