@@ -88,6 +88,8 @@ public class MultiTrackerActivity extends AppCompatActivity {
     private DatabaseReference sensors;
 
     public static Handler handler;
+    static final int REQUEST_CODE = 1;  // The request code
+//    private File file;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -201,11 +203,10 @@ public class MultiTrackerActivity extends AppCompatActivity {
     private void photoshot() {
         if(mCameraSource != null) {
             mCameraSource.takePicture(null, new PictureCallback() {
-                private File imageFile = null;
+//                private File imageFile = null;
 
                 @Override
                 public void onPictureTaken(byte[] bytes) {
-
                     try {
                         File imageFile = null;
                         Bitmap loadedImage = null;
@@ -220,7 +221,7 @@ public class MultiTrackerActivity extends AppCompatActivity {
 
                         File dir = initFilePath();
 
-                        java.util.Date date = new java.util.Date();
+//                        java.util.Date date = new java.util.Date();
                         imageFile = File.createTempFile("image", ".jpg", dir);
 
                         ByteArrayOutputStream ostream = new ByteArrayOutputStream();
@@ -232,7 +233,6 @@ public class MultiTrackerActivity extends AppCompatActivity {
                         fout.write(ostream.toByteArray());
                         fout.close();
                         ContentValues values = new ContentValues();
-
                         values.put(Images.Media.DATE_TAKEN,
                                 System.currentTimeMillis());
                         values.put(Images.Media.MIME_TYPE, "image/jpeg");
@@ -241,18 +241,31 @@ public class MultiTrackerActivity extends AppCompatActivity {
                         //System.out.println("imagepath:" + imageFile.getAbsolutePath());
                         MultiTrackerActivity.this.getContentResolver().insert(
                                 Images.Media.EXTERNAL_CONTENT_URI, values);
-
+                        Intent intent = new Intent(MultiTrackerActivity.this, AudioRecordActivity.class);
+                        Bundle bundleSerializable = new Bundle();
+                        bundleSerializable.putSerializable("imageFile", imageFile);
+                        intent.putExtras(bundleSerializable);
+                        startActivityForResult(intent, REQUEST_CODE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                ;
             });
         }
+        return;
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == REQUEST_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                finish();
+            }
+        }
+    }
     private File initFilePath() {
         String path;
         if (isSDCardValid()) {
