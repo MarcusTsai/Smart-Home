@@ -72,7 +72,7 @@ public class MultiTrackerActivity extends AppCompatActivity {
     private final double sec_next = 1.5;
     private final double sec_back = 10;
     private static final int RC_HANDLE_GMS = 9001;
-    // permission request codes need to be < 256
+    // permission request codes ne be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     private CameraSource mCameraSource = null;
