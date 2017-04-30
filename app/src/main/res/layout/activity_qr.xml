@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+tools:context="com.mobiot.cmu.smarthome.activities.QRActivity">
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/instIDTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.1"
+        android:textSize="26sp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:hint="Instance ID" />
+
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="60dp"
+        android:layout_weight="0.1"
+        android:text="Scan QR Code"
+        android:textSize="20sp" />
+
+</LinearLayout>
+
+<!--<Button
+    android:layout_width="fill_parent"
+    android:layout_height="60dp"
+    android:text="Configure Application"
+    android:id="@+id/startButton"
+    android:layout_gravity="center_horizontal"
+    android:layout_weight="0.10"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:textSize="20sp"
+    android:textStyle="normal"
+    />-->
+</RelativeLayout>
