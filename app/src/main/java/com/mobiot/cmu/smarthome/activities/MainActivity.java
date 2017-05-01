@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference myRef = null;
     private TextView temperatureText;
     private TextView humidityText;
-
+    private String message = null;
+    private String audio = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        if(bundle != null) {
+        if(bundle !=null && bundle.get("instanceID") != null) {
            instanceID = bundle.get("instanceID").toString();
            System.out.println("instanceID:" + instanceID);
            setReference();
@@ -80,12 +81,12 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton(no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
+//                .setNegativeButton(no, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                    }
+//                })
                 .setIcon(R.drawable.common_google_signin_btn_icon_dark_normal).show();
 
         } else {
@@ -107,26 +108,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void setReference () {
         // Read from the database
-        DatabaseReference myRef = database.getReference(instanceID).child("1").child("current");
+        final DatabaseReference myRef = database.getReference(instanceID).child("1").child("current");
         myRef.child("clientAudio").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                try
-                {
-                    byte[] decoded = Base64.decode(value, 0);
-                    File file = new File(Environment.getExternalStorageDirectory() + "/tmp.amr");
-                    FileOutputStream os = new FileOutputStream(file, true);
-                    os.write(decoded);
-                    os.close();
-                    playAudio(file);
-//                    file.delete();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
+                audio = dataSnapshot.getValue(String.class);
+                if(!audio.equals("")) {
+                    playClientAudio();
                 }
 
             }
@@ -144,10 +134,12 @@ public class MainActivity extends AppCompatActivity {
                 // whenever data at this location is updated.
 
 
-                String value = dataSnapshot.getValue(String.class);
+                message = dataSnapshot.getValue(String.class);
                 System.out.println("datasnapshot:" + dataSnapshot);
-                t1.speak(value, TextToSpeech.QUEUE_FLUSH, null, "" + (count++));
-
+                if(!message.equals("")) {
+                    textTospeaker();
+                }
+                //myRef.child("message").setValue("");
             }
 
             @Override
@@ -157,20 +149,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        myRef.child("environment").addValueEventListener(new ValueEventListener() {
+        myRef.child("sensors").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 try {
                     JSONObject config = new JSONObject((HashMap) dataSnapshot.getValue());
                     System.out.println("config:" + config);
-                    String temp = config.getString("temperature");
+
+                    JSONObject configtemp = config.getJSONObject("tempHumidity");
+                    String temp = configtemp.getString("temp");
                     temperatureText.setText(temp + "'C");
 
-                    String humid = config.getString("humidity");
+                    String humid = configtemp.getString("humidity");
                     humidityText.setText(humid + "%");
 
-                    Boolean motiondetect = config.getBoolean("motion");
+                    JSONObject configmotion = config.getJSONObject("proximityWarning");
+                    Boolean motiondetect = configmotion.getBoolean("isClose");
                     if(motiondetect.equals(true)) {
                         Intent intent = new Intent(MainActivity.this, MultiTrackerActivity.class);
                         startActivity(intent);
@@ -189,6 +184,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void textTospeaker() {
+        t1.speak(message, TextToSpeech.QUEUE_FLUSH, null, "" + (count++));
+        myRef.child("message").setValue("");
+    }
+
+    private void playClientAudio() {
+        try
+        {
+            byte[] decoded = Base64.decode(audio, 0);
+            File file = new File(Environment.getExternalStorageDirectory() + "/tmp.amr");
+            if(file.exists()) file.delete();
+            file = new File(Environment.getExternalStorageDirectory() + "/tmp.amr");
+            FileOutputStream os = new FileOutputStream(file, true);
+            os.write(decoded);
+            os.close();
+            playAudio(file);
+            myRef.child("audio").setValue("");
+//                    file.delete();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     private void playAudio(File file) {
         MediaPlayer player = new MediaPlayer();
@@ -197,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
             player.setDataSource(path);
             player.prepare();
             player.start();
+            myRef.child("clientAudio").setValue("");
         } catch (IOException e) {
             e.printStackTrace();
         }
