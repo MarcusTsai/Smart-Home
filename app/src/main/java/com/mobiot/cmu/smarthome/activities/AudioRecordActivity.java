@@ -169,7 +169,7 @@ public class AudioRecordActivity extends AppCompatActivity {
                 intent.setClass(AudioRecordActivity.this, MultiTrackerActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-//                finish();
+                finish();
             }
         });
         mUploadBtn.setOnClickListener(new View.OnClickListener() {
@@ -316,7 +316,7 @@ public class AudioRecordActivity extends AppCompatActivity {
     }
 
     public class UploadFileTask extends AsyncTask<Void, Void, Boolean> {
-        private Timer timer = new Timer();
+//        private Timer timer = new Timer();
         private final int DELAY_NEXT = (int)(2 * 1000);
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -365,20 +365,27 @@ public class AudioRecordActivity extends AppCompatActivity {
                 imageFile.delete();
                 Toast toast = Toast.makeText(AudioRecordActivity.this, "File uploaded successfully!", Toast.LENGTH_SHORT);
                 toast.show();
-                timer.schedule(
-                        new TimerTask() {
-                            @Override
-                            public void run() {
-//                                Intent intent = new Intent();
-//                                intent.setClass(AudioRecordActivity.this, MainActivity.class);
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);//设置不要刷新将要跳到的界面
-//                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//它可以关掉所要到的界面中间的activity
-//                                startActivity(intent);
-                                setResult(RESULT_OK);
-                                finish();
-                            }
-                        }, DELAY_NEXT
-                );
+//                timer.schedule(
+//                        new TimerTask() {
+//                            @Override
+//                            public void run() {
+////                                Intent intent = new Intent();
+////                                intent.setClass(AudioRecordActivity.this, MainActivity.class);
+////                                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);//设置不要刷新将要跳到的界面
+////                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//它可以关掉所要到的界面中间的activity
+////                                startActivity(intent);
+////                                setResult(RESULT_OK);
+//                                AudioRecordActivity.this.finish();
+//                            }
+//                        }, DELAY_NEXT
+//                );
+                Handler handler = new Handler();
+
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        finish();
+                    }
+                }, DELAY_NEXT);
             } else {
                 Toast toast = Toast.makeText(AudioRecordActivity.this, "Failed!", Toast.LENGTH_SHORT);
                 toast.show();

@@ -68,17 +68,20 @@ public class MainActivity extends AppCompatActivity {
            instanceID = bundle.get("instanceID").toString();
            System.out.println("instanceID:" + instanceID);
            setReference();
-        }
-
-        if(instanceID == null) {
+        } else if(instanceID == null) {
             AlertDialog diag = new AlertDialog.Builder(this)
                 .setTitle("Initial Set Up")
                 .setMessage("Please Register at First")
                 .setPositiveButton(yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if(t1 !=null){
+                            t1.stop();
+                            t1.shutdown();
+                        }
                         Intent intent = new Intent(MainActivity.this, QRActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 })
 //                .setNegativeButton(no, new DialogInterface.OnClickListener() {
@@ -89,17 +92,18 @@ public class MainActivity extends AppCompatActivity {
 //                })
                 .setIcon(R.drawable.common_google_signin_btn_icon_dark_normal).show();
 
-        } else {
-            myRef = database.getReference(instanceID).child("1").child("current");
-            setReference();
-
         }
 
         registerButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                if(t1 !=null){
+                    t1.stop();
+                    t1.shutdown();
+                }
                 Intent intent = new Intent(MainActivity.this, QRActivity.class);
                 startActivity(intent);
+                finish();
             }
 
         });
@@ -201,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             os.close();
             playAudio(file);
             myRef.child("audio").setValue("");
-//                    file.delete();
         }
         catch (Exception e)
         {

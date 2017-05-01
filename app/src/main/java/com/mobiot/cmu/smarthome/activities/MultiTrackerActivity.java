@@ -13,21 +13,16 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
-import android.os.CountDownTimer;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.MediaColumns;
-import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -43,11 +38,8 @@ import com.google.android.gms.vision.CameraSource.*;
 import com.google.android.gms.vision.MultiDetector;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.FaceDetector;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.mobiot.cmu.smarthome.R;
 import com.mobiot.cmu.smarthome.facetracker.CameraSourcePreview;
 import com.mobiot.cmu.smarthome.facetracker.FaceTrackerFactory;
@@ -55,22 +47,18 @@ import com.mobiot.cmu.smarthome.facetracker.GraphicOverlay;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-
 
 public class MultiTrackerActivity extends AppCompatActivity {
     private static final String TAG = "MultiTracker";
-    private final double sec_next = 1.5;
-    private final double sec_back = 10;
+    private final double sec_next = 3;
+    private final double sec_back = 6;
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes ne be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -88,7 +76,11 @@ public class MultiTrackerActivity extends AppCompatActivity {
     private DatabaseReference sensors;
 
     public static Handler handler;
-    static final int REQUEST_CODE = 1;  // The request code
+//    static final int REQUEST_CODE = 1;  // The request code
+    private Timer timerToReturn;
+    private TimerTask myFinishTask;
+    private TimerTask takePhotoTask;
+
 //    private File file;
 
     /**
@@ -156,7 +148,9 @@ public class MultiTrackerActivity extends AppCompatActivity {
 //                }
 //                public void onFinish(){}
 //            };
-
+            timerToReturn = new Timer();
+            myFinishTask = new MyFinishTask();
+            timerToReturn.schedule(myFinishTask, 6000);
             faceCount.addTextChangedListener(new TextWatcher() {
                 private Timer timer = new Timer();
                 private final int DELAY_NEXT = (int)(sec_next * 1000);
@@ -171,24 +165,15 @@ public class MultiTrackerActivity extends AppCompatActivity {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    if(Integer.parseInt(faceCount.getText().toString()) > 0) {
-                        timer.schedule(
-                                new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        photoshot();
-                                    }
-                                }, DELAY_NEXT
-                        );
-                    } else if (Integer.parseInt(faceCount.getText().toString()) == 0){
-                        timer.schedule(
-                                new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        photoshot();
-                                    }
-                                }, DELAY_BACK
-                        );
+                    final int numOfFace = Integer.parseInt(faceCount.getText().toString());
+                    if(numOfFace > 0) {
+                        if(myFinishTask != null) myFinishTask.cancel();
+                        takePhotoTask = new TakePhotoTask(numOfFace);
+                        timer.schedule(takePhotoTask, DELAY_NEXT);
+                    } else if (numOfFace == 0){
+                        if(takePhotoTask != null) takePhotoTask.cancel();
+                        myFinishTask = new MyFinishTask();
+                        timerToReturn.schedule(myFinishTask, DELAY_BACK);
                     }
 
                 }
@@ -198,6 +183,24 @@ public class MultiTrackerActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private class MyFinishTask extends TimerTask {
+
+        @Override
+        public void run() {
+            finish();
+        }
+    }
+    private class TakePhotoTask extends TimerTask {
+        private int numOfFace;
+        public TakePhotoTask(int numOfFace) {
+            this.numOfFace = numOfFace;
+        }
+        @Override
+        public void run() {
+            int numOfFaceAfter2Secs = Integer.parseInt(faceCount.getText().toString());
+            if(numOfFaceAfter2Secs == numOfFace) photoshot();
         }
     }
     private void photoshot() {
@@ -245,7 +248,9 @@ public class MultiTrackerActivity extends AppCompatActivity {
                         Bundle bundleSerializable = new Bundle();
                         bundleSerializable.putSerializable("imageFile", imageFile);
                         intent.putExtras(bundleSerializable);
-                        startActivityForResult(intent, REQUEST_CODE);
+                        startActivity(intent);
+                        finish();
+//                        startActivityForResult(intent, REQUEST_CODE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -256,16 +261,16 @@ public class MultiTrackerActivity extends AppCompatActivity {
         return;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == REQUEST_CODE) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                finish();
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // Check which request we're responding to
+//        if (requestCode == REQUEST_CODE) {
+//            // Make sure the request was successful
+//            if (resultCode == RESULT_OK) {
+//                finish();
+//            }
+//        }
+//    }
     private File initFilePath() {
         String path;
         if (isSDCardValid()) {
