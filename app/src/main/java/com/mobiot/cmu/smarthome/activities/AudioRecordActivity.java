@@ -332,6 +332,7 @@ public class AudioRecordActivity extends AppCompatActivity {
             Date mydate=new Date();
             mCalendar.setTime(mydate);
             String timestamp = mCalendar.getTimeInMillis() + "";
+
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("deviceTest").child("1");
             if(list.isEmpty()) {
