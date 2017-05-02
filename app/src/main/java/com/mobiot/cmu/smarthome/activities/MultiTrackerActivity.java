@@ -127,8 +127,9 @@ public class MultiTrackerActivity extends AppCompatActivity {
                     }
                     //deleteNodeInFirebase();
 
-                    Intent intent = new Intent(MultiTrackerActivity.this, MainActivity.class);
-                    startActivity(intent);
+//                    Intent intent = new Intent(MultiTrackerActivity.this, MainActivity.class);
+//                    startActivity(intent);
+                    finish();
                 }
             });
 
