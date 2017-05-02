@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView humidityText;
     private String message = null;
     private String audio = null;
+    private ValueEventListener sensorLister = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setReference () {
         // Read from the database
-        final DatabaseReference myRef = database.getReference(instanceID).child("1").child("current");
+        myRef = database.getReference(instanceID).child("1").child("current");
         myRef.child("clientAudio").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        myRef.child("sensors").addValueEventListener(new ValueEventListener() {
+        myRef.child("sensors").addValueEventListener(sensorLister = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -171,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject configmotion = config.getJSONObject("proximityWarning");
                     Boolean motiondetect = configmotion.getBoolean("isClose");
                     if(motiondetect.equals(true)) {
+                        myRef.child("sensors").removeEventListener(sensorLister);
                         Intent intent = new Intent(MainActivity.this, MultiTrackerActivity.class);
                         startActivity(intent);
 
@@ -230,4 +232,9 @@ public class MainActivity extends AppCompatActivity {
 //        startActivity(intent);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(myRef != null) myRef.child("sensors").addValueEventListener(sensorLister);
+    }
 }
