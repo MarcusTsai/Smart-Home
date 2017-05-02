@@ -58,7 +58,7 @@ import java.util.TimerTask;
 public class MultiTrackerActivity extends AppCompatActivity {
     private static final String TAG = "MultiTracker";
     private final double sec_next = 3;
-    private final double sec_back = 6;
+    private final double sec_back = 20;
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes ne be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -151,7 +151,7 @@ public class MultiTrackerActivity extends AppCompatActivity {
 //            };
             timerToReturn = new Timer();
             myFinishTask = new MyFinishTask();
-            timerToReturn.schedule(myFinishTask, 6000);
+            timerToReturn.schedule(myFinishTask, 20000);
             faceCount.addTextChangedListener(new TextWatcher() {
                 private Timer timer = new Timer();
                 private final int DELAY_NEXT = (int)(sec_next * 1000);

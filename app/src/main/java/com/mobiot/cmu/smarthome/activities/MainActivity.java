@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -27,13 +30,15 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
 import static android.R.string.no;
 import static android.R.string.yes;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Runnable {
     private TextToSpeech t1;
     private int count = 1;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -41,19 +46,26 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference myRef = null;
     private TextView temperatureText;
     private TextView humidityText;
+    private TextView dateTime;
     private String message = null;
     private String audio = null;
     private ValueEventListener sensorLister = null;
-
+    private boolean motionFlag = true;
+    private Handler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-
+        dateTime = (TextView) findViewById(R.id.dateTime);
+        handler = new Handler() {
+            public void handleMessage(Message msg) {
+                dateTime.setText((String)msg.obj);
+            }
+        };
+        new Thread(this).start();
         temperatureText = (TextView) findViewById(R.id.tempText);
         humidityText = (TextView) findViewById(R.id.humidText);
-        Button registerButton = (Button) findViewById(R.id.register);
+//        Button registerButton = (Button) findViewById(R.id.register);
         t1 = new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -95,19 +107,19 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        registerButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(t1 !=null){
-                    t1.stop();
-                    t1.shutdown();
-                }
-                Intent intent = new Intent(MainActivity.this, QRActivity.class);
-                startActivity(intent);
-                finish();
-            }
-
-        });
+//        registerButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                if(t1 !=null){
+//                    t1.stop();
+//                    t1.shutdown();
+//                }
+//                Intent intent = new Intent(MainActivity.this, QRActivity.class);
+//                startActivity(intent);
+//                finish();
+//            }
+//
+//        });
 
     }
 
@@ -164,15 +176,16 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONObject configtemp = config.getJSONObject("tempHumidity");
                     String temp = configtemp.getString("temp");
-                    temperatureText.setText(temp + "'C");
+                    temperatureText.setText("Temp: " + temp + "'C");
 
                     String humid = configtemp.getString("humidity");
-                    humidityText.setText(humid + "%");
+                    humidityText.setText("Humidity: " + humid + "%");
 
                     JSONObject configmotion = config.getJSONObject("proximityWarning");
                     Boolean motiondetect = configmotion.getBoolean("isClose");
-                    if(motiondetect.equals(true)) {
-                        myRef.child("sensors").removeEventListener(sensorLister);
+                    if(motionFlag && motiondetect.equals(true)) {
+                        motionFlag = false;
+//                        myRef.child("sensors").removeEventListener(sensorLister);
                         Intent intent = new Intent(MainActivity.this, MultiTrackerActivity.class);
                         startActivity(intent);
 
@@ -235,6 +248,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if(myRef != null) myRef.child("sensors").addValueEventListener(sensorLister);
+        motionFlag = true;
+//        if(myRef != null) myRef.child("sensors").addValueEventListener(sensorLister);
+    }
+
+    @Override
+    public void run() {
+        try {
+            while(true){
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                String str=sdf.format(new Date());
+                handler.sendMessage(handler.obtainMessage(100,str));
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

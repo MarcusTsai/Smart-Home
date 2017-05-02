@@ -14,23 +14,23 @@ tools:context="com.mobiot.cmu.smarthome.activities.QRActivity">
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <TextView
-        android:id="@+id/instIDTextView"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_weight="0.1"
-        android:textSize="26sp"
-        android:background="@android:drawable/editbox_background_normal"
-        android:hint="Instance ID" />
+    <!--<TextView-->
+        <!--android:id="@+id/instIDTextView"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_weight="0.1"-->
+        <!--android:textSize="26sp"-->
+        <!--android:background="@android:drawable/editbox_background_normal"-->
+        <!--android:hint="Instance ID" />-->
 
-    <Button
-        android:id="@+id/scanButton"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="60dp"
-        android:layout_weight="0.1"
-        android:text="Scan QR Code"
-        android:textSize="20sp" />
+    <!--<Button-->
+        <!--android:id="@+id/scanButton"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_marginTop="60dp"-->
+        <!--android:layout_weight="0.1"-->
+        <!--android:text="Scan QR Code"-->
+        <!--android:textSize="20sp" />-->
 
 </LinearLayout>
 

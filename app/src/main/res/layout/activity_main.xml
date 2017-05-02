@@ -10,15 +10,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextClock
-            android:id="@+id/textClock"
+        <!--<TextView-->
+            <!--android:id="@+id/date"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="51dp"-->
+            <!--android:textSize="80sp"/>-->
+
+        <TextView
+            android:id="@+id/dateTime"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="51dp"
-            android:textSize="80sp"
+            android:layout_centerHorizontal="true"
+            android:textSize="60sp"
             android:gravity="center_horizontal"
             tools:layout_editor_absoluteX="82dp"
             tools:layout_editor_absoluteY="142dp" />
@@ -33,33 +39,29 @@
                 android:id="@+id/tempText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textClock"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:inputType="textPersonName"
-                android:text="25F"
-                android:textSize="60sp" />
+                android:text="Temp: 25F"
+                android:textSize="25sp" />
 
             <TextView
                 android:id="@+id/humidText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tempText"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:inputType="textPersonName"
-                android:text="10"
-                android:textSize="60sp" />
+                android:gravity="left"
+                android:text="Humidity: 10%"
+                android:textSize="25sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Register"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+    <!--<Button-->
+        <!--android:id="@+id/register"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="Register"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentEnd="true" />-->
 
 </RelativeLayout>

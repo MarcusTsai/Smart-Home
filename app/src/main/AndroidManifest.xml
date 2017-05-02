@@ -21,15 +21,26 @@
             android:value="barcode" />
 
         <activity android:name=".activities.MainActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".activities.AudioRecordActivity" />
+        <activity android:name=".activities.MultiTrackerActivity" />
+        <activity android:name=".activities.QRActivity" />
+        <activity
+            android:name=".activities.ScanQRCodeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_scan_qrcode"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AudioRecordActivity" />
-        <activity android:name=".activities.MultiTrackerActivity" />
-        <activity android:name=".activities.QRActivity"></activity>
     </application>
 
 </manifest>

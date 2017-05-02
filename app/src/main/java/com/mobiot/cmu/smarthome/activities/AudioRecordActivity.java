@@ -329,7 +329,7 @@ public class AudioRecordActivity extends AppCompatActivity {
             Map<String, Object> updateCurrent= new HashMap<>();
             Map<String, Object> updateHistory= new HashMap<>();
             Calendar mCalendar= Calendar.getInstance(Locale.US);
-            Date mydate=new Date();
+            Date mydate = new Date();
             mCalendar.setTime(mydate);
             String timestamp = mCalendar.getTimeInMillis() + "";
 
