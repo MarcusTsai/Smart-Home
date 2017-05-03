@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmartHome</string>
+    <string name="app_name">SmartDoorbell</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -11,7 +11,5 @@
     </string>
 
     <string name="title_activity_scan_qrcode">ScanQRCodeActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>
